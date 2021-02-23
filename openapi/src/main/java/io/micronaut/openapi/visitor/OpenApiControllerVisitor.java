@@ -112,7 +112,11 @@ public class OpenApiControllerVisitor extends AbstractOpenApiEndpointVisitor imp
 
     @Override
     protected List<UriMatchTemplate> uriMatchTemplates(MethodElement element) {
-        String controllerValue = element.getOwningType().getValue(UriMapping.class, String.class).orElse(element.getDeclaringType().getValue(UriMapping.class, String.class).orElse("/"));
+        String controllerValue = element.getOwningType().getValue(UriMapping.class, String.class)
+                .orElse(element.getOwningType().getValue(Controller.class, String.class)
+                        .orElse(element.getDeclaringType().getValue(UriMapping.class, String.class)
+                                .orElse(element.getDeclaringType().getValue(Controller.class, String.class)
+                                        .orElse("/"))));
         controllerValue = getPropertyPlaceholderResolver().resolvePlaceholders(controllerValue).orElse(controllerValue);
         UriMatchTemplate matchTemplate = UriMatchTemplate.of(controllerValue);
         // check if we have multiple uris
